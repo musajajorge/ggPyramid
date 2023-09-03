@@ -1,5 +1,5 @@
 
-# popPyramid
+# ggPyramid
 
 <!-- badges: start -->
 
