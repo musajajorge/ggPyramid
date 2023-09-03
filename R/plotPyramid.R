@@ -30,7 +30,7 @@ options(dplyr.summarise.inform = FALSE)
 #' destfile <- "popPER.xlsx"
 #' curl::curl_download(url, destfile)
 #' data <- read_excel(destfile)
-#' data <- dplyr::filter(data, Year==2021)
+#' data <- dplyr::filter(data, Year==2023)
 #' plotPyramid(df=data, age="gAge", group="Sex", pop="Population", value.labels=T)
 #'
 
