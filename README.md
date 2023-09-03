@@ -23,6 +23,15 @@ install_github("musajajorge/ggPyramid")
 
 ## Usage :muscle:
 
+``` r
+library(readxl)
+url <- "https://zenodo.org/record/8306939/files/popPER.xlsx?download=1"
+destfile <- "popPER.xlsx"
+curl::curl_download(url, destfile)
+data <- read_excel(destfile)
+data <- dplyr::filter(data, Year==2023)
+```
+
 ### :arrow_right: plotPyramid :arrow_left:
 
 #### Peru's population pyramid, year 2023
@@ -30,10 +39,7 @@ install_github("musajajorge/ggPyramid")
 Using the default parameters.
 
 ``` r
-df <- popPyramid::popPER
-df <- dplyr::filter(df, Year==2021)
-library(popPyramid)
-plotPyramid(df=df, age="gAge", sex="Sex", pop="Population")
+plotPyramid(df=data, age="gAge", group="Sex", pop="Population")
 ```
 
 <img src="imgs/ex1.png" width="100%" />
@@ -43,11 +49,8 @@ plotPyramid(df=df, age="gAge", sex="Sex", pop="Population")
 Modifying the colors, X and Y axis labels, as well as the rotation of the X axis labels.
 
 ``` r
-df <- popPyramid::popPER
-df <- dplyr::filter(df, Year==2021)
-library(popPyramid)
-plotPyramid(df=df, age="gAge", sex="Sex", pop="Population",
-            labx="Personas", laby="Grupo de edad",
+plotPyramid(df=data, age="gAge", group="Sex", pop="Population",
+            labx="People", laby="Age group",
             twocolors=c("steelblue","violetred3"),
             rotation=45, n.breaks=15, value.labels=FALSE)
 ```
@@ -59,43 +62,43 @@ plotPyramid(df=df, age="gAge", sex="Sex", pop="Population",
 Modifying the position of the values in the bars.
 
 ``` r
-df <- popPyramid::popPER
-df <- dplyr::filter(df, Year==2021)
-library(popPyramid)
-plotPyramid(df=df, age="gAge", sex="Sex", pop="Population",
-            value.labels=TRUE, position.value.labels = "out",
+plotPyramid(df=data, age="gAge", group="Sex", pop="Population",
+            value.labels=TRUE, position.value.labels="out",
             size.value.labels=4)
 ```
 
 <img src="imgs/ex3.png" width="100%" />
+
+### :arrow_right: plotPercPyramid :arrow_left:
 
 #### Percentage pyramid of Peru's population, year 2023
 
 Using the default parameters.
 
 ``` r
-df <- popPyramid::popPER
-df <- dplyr::filter(df, Year==2021)
-df <- percDF(df, "gAge", "Sex", "Population")
-library(popPyramid)
-plotPercPyramid(df=df, age="gAge", sex="Sex", perpop="perc_Population")
+library(dplyr)
+data <- data |>
+  group_by(gAge, Sex) |>
+  summarise(Population = sum(Population)) |>
+  group_by(Sex) |>
+  mutate(percPopulation = round(Population/sum(Population)*100, 4)) |>
+  select(gAge, Sex, percPopulation) |>
+  arrange(Sex, gAge)
+```
+
+``` r
+plotPercPyramid(df=data, age="gAge", group="Sex", perpop="percPopulation")
 ```
 
 <img src="imgs/ex4.png" width="100%" />
-
-### :arrow_right: plotPercPyramid :arrow_left:
 
 #### Percentage pyramid of Peru's population, year 2023
 
 Modifying the position of the values on the bars, the X and Y axis labels and the colors of the bars.
 
 ``` r
-df <- popPyramid::popPER
-df <- dplyr::filter(df, Year==2021)
-df <- percDF(df, "gAge", "Sex", "Population")
-library(popPyramid)
-plotPercPyramid(df=df, age="gAge", sex="Sex", perpop="perc_Population",
-                labx="% Personas", laby="Grupo de edad", n.breaks=10,
+plotPercPyramid(df=data, age="gAge", group="Sex", perpop="percPopulation",
+                labx="% People", laby="Age group", n.breaks=10,
                 twocolors=c("steelblue","violetred3"),
                 value.labels=TRUE, position.value.labels="out",
                 size.value.labels=4)
